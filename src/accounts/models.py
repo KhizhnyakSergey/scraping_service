@@ -80,4 +80,4 @@ class MyUser(AbstractBaseUser):
         verbose_name_plural = 'Пользователи'
 
     def __str__(self) -> str:
-        return self.title
+        return self.email

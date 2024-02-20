@@ -2,7 +2,10 @@ from django.db import models
 
 from .utils import from_cyrillic_to_eng
 
-# Create your models here.
+
+def default_urls():
+    return {"work": "", "rabota": "", "dou": "", "djinni": ""}
+
 
 class City(models.Model):
     name = models.CharField(max_length=50, verbose_name='Название города', unique=True)
@@ -65,4 +68,17 @@ class Error(models.Model):
         verbose_name_plural = 'Ошибки'
 
     def __str__(self) -> str:
-        return self.title
+        return f"{self.timestamp} -->  {self.data}"
+    
+
+class Url(models.Model):
+    
+    city = models.ForeignKey('City', on_delete=models.CASCADE, verbose_name='Город')
+    language = models.ForeignKey('Language', on_delete=models.CASCADE, verbose_name='Язык программирования')
+    url_data = models.JSONField(default=default_urls)
+
+    class Meta:
+        unique_together = ("city", "language")
+
+    def __str__(self) -> str:
+        return f"Город: {self.city}  Язык: {self.language}"
