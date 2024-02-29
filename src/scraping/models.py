@@ -27,7 +27,7 @@ class City(models.Model):
 class Language(models.Model):
     name = models.CharField(max_length=50, verbose_name='Язык программирования', unique=True)
     slug = models.CharField(max_length=50, blank=True, unique=True)
-
+    
     class Meta:
         verbose_name = 'Язык программирования'
         verbose_name_plural = 'Языки программирования'
@@ -69,7 +69,7 @@ class Error(models.Model):
         verbose_name_plural = 'Ошибки'
 
     def __str__(self) -> str:
-        return f"{self.timestamp} -->  {self.data}"
+        return f"{self.timestamp}"
     
 
 class Url(models.Model):

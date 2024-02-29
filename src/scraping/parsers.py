@@ -100,7 +100,7 @@ def rabota(url: str, city: str = None, language: str = None,):
 
     if city_id is not None:
         # Соответствие найдено, city_id содержит идентификатор центра
-        print(f"RABOTAUA  || SUCCESSFULLY  Идентификатор центра для города {city} ({city_name}): {city_id}")
+        print(f"RABOTAUA  || SUCCESSFULLY  Center ID for the city {city=} ({city_name=}): {city_id=}")
     else:
         # Соответствие не найдено
         errors.append(f"RABOTAUA  || ERROR Соответствие для города c id={city} не найдено "
@@ -147,7 +147,7 @@ def rabota(url: str, city: str = None, language: str = None,):
     }
     
 
-    if url:
+    if city_id:
 
         response = requests.post('https://dracula.robota.ua/', params=params, headers=headers, json=json_data)
         if response.status_code == 200:
@@ -158,22 +158,27 @@ def rabota(url: str, city: str = None, language: str = None,):
 
             # Проходимся по каждой вакансии и добавляем нужные данные в список jobs
             for vacancy in vacancies:
+                if vacancy is not None:
+                    id = vacancy.get('id', '')
+                    if vacancy.get('company', '') is None:
+                        company_id = '0'
+                        company = None
+                    else:
+                        company_id = vacancy.get('company').get('id')
+                        company = vacancy.get('company').get('name')
+                        
+                    title = vacancy.get('title', '')
+                    description = vacancy.get('description', '')
+                    description_cleaned = description.replace('\xa0', '').replace('\r', '').replace('\n', '').replace('\t', '')
+                    href = f'https://robota.ua/company{company_id}/vacancy{id}',
 
-                id = vacancy.get('id', '')
-                company_id = vacancy.get('company').get('id')
-                title = vacancy.get('title', '')
-                company = vacancy.get('company').get('name')
-                description = vacancy.get('description', '')
-                description_cleaned = description.replace('\xa0', '').replace('\r', '').replace('\n', '').replace('\t', '')
-                href = f'https://robota.ua/company{company_id}/vacancy{id}',
-
-                jobs.append({'title': title,
-                            'url': href,
-                            'company': company,
-                            'description': description_cleaned,
-                            'city_id': city,
-                            'language_id': language,
-                            })
+                    jobs.append({'title': title,
+                                'url': href,
+                                'company': company,
+                                'description': description_cleaned,
+                                'city_id': city,
+                                'language_id': language,
+                                })
         else:
             errors.append(f"Error {response.status_code}: {response.text}")
     

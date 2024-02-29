@@ -1,8 +1,9 @@
 import codecs
 import asyncio
 import os, sys
+import datetime as dt
 
-from django.db import DatabaseError
+from django.db import DatabaseError, IntegrityError
 from django.contrib.auth import get_user_model
 
 proj = os.path.dirname(os.path.abspath('manage.py'))
@@ -15,8 +16,6 @@ django.setup()
 from scraping.parsers import *
 from scraping.models import (
     Vacancy, 
-    City, 
-    Language, 
     Error, 
     Url
 )
@@ -62,16 +61,19 @@ async def main(value):
 settings = get_settings()
 url_list = get_urls(settings)
 
-# city = City.objects.filter(slug='kiev').first()
-# language = Language.objects.filter(slug='python').first()
 
+# loop = asyncio.get_event_loop()
+# Создаем новый цикл событий
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
 
-loop = asyncio.get_event_loop()
 tmp_tasks = [(func, data['url_data'][key], data['city'], data['language'])
              for data in url_list
              for func, key in parsers]
 
 tasks = asyncio.wait([loop.create_task(main(f)) for f in tmp_tasks])
+loop.run_until_complete(tasks)
+loop.close()  
 
 # for data in url_list:
 
@@ -81,18 +83,28 @@ tasks = asyncio.wait([loop.create_task(main(f)) for f in tmp_tasks])
 #         jobs += j
 #         errors += e
 
-loop.run_until_complete(tasks)
-loop.close()       
-
+     
 for job in jobs:
     v = Vacancy(**job)
     try:
         v.save()
         print("Data saved successfully!")
+    except IntegrityError as un:
+        print('dublicate', v.url)
     except DatabaseError as e:
         print("Error saving data:", e)
 if errors:
-    er = Error(data=errors).save()
+    qs = Error.objects.filter(timestamp=dt.date.today())
+    if qs.exists():
+        # err = qs.first()
+        # err.data.update({'errors1': errors})
+        # err.save()
+        err = qs.first()
+        err_data = err.data  # Assuming err.data is a dictionary
+        err_data['errors'] = errors  # Assuming errors is a list
+        err.save()
+    else:
+        er = Error(data=f'errors:{errors}').save()
 
 # h = codecs.open('work.txt', 'w', encoding='utf-8')
 # h.write(str(jobs))
