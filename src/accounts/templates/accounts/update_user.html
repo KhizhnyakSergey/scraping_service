@@ -16,8 +16,26 @@
         </form>
         <form method="POST" action="{% url 'accounts:delete' %}">
             {% csrf_token %} 
-            <button type="submit" class="btn btn-danger my-3">Удалить</button>
+            <button type="submit" class="btn btn-danger my-3">Удалить аккаунт</button>
         </form>
+    </div>
+</div>
+
+
+<div class="row my-5">
+    <div class="col-md-8 mx-auto">
+            <p class="my-2">Если вы не нашли подходящий набор Город, Специальность, 
+                Вы можете заполнить форму нижес вашими пожеланиями. После того, 
+                как необходимые данные будут добаллены, вы получите письмо на указанный вами email
+            </p>
+        <form method="POST" action="{% url 'accounts:contact' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ contact_form.as_p }}
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+
     </div>
 </div>
 
