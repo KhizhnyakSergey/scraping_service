@@ -264,10 +264,10 @@ if __name__ == '__main__':
 
     # url = 'https://jobs.dou.ua/vacancies/?city=%D0%9A%D0%B8%D1%97%D0%B2&search=python'
 
-    url = 'https://djinni.co/jobs/?primary_keyword=Python&region=UKR&location=kyiv'
+    # url = 'https://djinni.co/jobs/?primary_keyword=Python&region=UKR&location=kyiv'
     
-    jobs, errors = djinni(url) 
-    h = codecs.open('work.text', 'w', encoding='utf-8')
-    h.write(str(jobs))
-    h.close()
-
+    # jobs, errors = djinni(url) 
+    # h = codecs.open('work.text', 'w', encoding='utf-8')
+    # h.write(str(jobs))
+    # h.close()
+    ...
